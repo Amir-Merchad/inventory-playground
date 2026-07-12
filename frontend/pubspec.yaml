@@ -1,0 +1,95 @@
+name: frontend
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+  flutter: ">=3.44.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  # UI — features import ONLY shadcn_wrapper (the shadcn seam lives there).
+  shadcn_wrapper:
+    path: ../shadcn_wrapper
+  shadcn_flutter: ^0.0.52   # direct dep stays ONLY for ShadcnApp bootstrap in app.dart
+  flutter_svg: ^2.0.10
+  # State management — BLoC
+  flutter_bloc: ^9.1.1
+  bloc: ^9.2.1
+  bloc_concurrency: ^0.3.0
+  hydrated_bloc: ^11.0.0      # persists bloc state (e.g. cart, settings) across restarts
+  equatable: ^2.0.5          # value equality for events/states
+#  # DI
+#  get_it: ^9.2.1
+  # Networking
+  dio: ^5.7.0
+  retrofit: ^4.4.0
+  pretty_dio_logger: ^1.4.0
+#  connectivity_plus: ^7.2.0
+#  web_socket_channel: ^3.0.0
+  # Local cache / offline (sqlite3_flutter_libs removed — EOL no-op since sqlite3 3.x)
+#  drift: ^2.34.0
+#  drift_flutter: ^0.3.0
+  flutter_secure_storage: ^10.3.1
+  shared_preferences: ^2.3.0
+  path_provider: ^2.1.0
+  # Models
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.9.0
+  # Money (Dart double is float — use Decimal!)
+  decimal: ^3.0.0
+  intl: ^0.20.2
+  # Routing
+  go_router: ^17.3.0
+  # Hardware / POS
+  flutter_thermal_printer: ^2.2.1
+  printing: ^5.13.0
+  pdf: ^3.11.0
+  mobile_scanner: ^7.2.0
+  # Logging (app log file w/ timestamps)
+  logger: ^2.4.0
+#  sentry_flutter: ^8.9.0       # production crash/error reporting
+#  uuid: ^4.5.0
+#  package_info_plus: ^10.2.0
+  device_info_plus: ^13.2.0
+  #search stream debounce
+  stream_transform:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  bloc_test: ^10.0.0
+  build_runner: ^2.15.1
+  retrofit_generator: ^10.2.7
+  freezed: ^3.2.6-dev.1
+  json_serializable: ^6.8.0
+  very_good_analysis: ^10.3.0    # stricter shared lint ruleset
+  mocktail: ^1.0.0
+
+flutter:
+  uses-material-design: true
+  generate: true
+  assets:
+
+

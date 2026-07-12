@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: inventory-postgres
+    environment:
+      POSTGRES_DB: inventory_playground
+      POSTGRES_USER: inventory
+      POSTGRES_PASSWORD: amir123
+    ports:
+      - "5433:5432"
+    volumes:
+      - inventory_postgres_data:/var/lib/postgresql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U inventory -d inventory_playground
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: inventory-backend
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/inventory_playground
+      DB_USERNAME: inventory
+      DB_PASSWORD: amir123
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  inventory_postgres_data:
