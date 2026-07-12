@@ -1,12 +1,17 @@
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
+const _apiBaseUrl = String.fromEnvironment(
+  'API_BASE_URL',
+  defaultValue: 'http://localhost:8080/api',
+);
+
 Dio createDioClient() {
   final dio = Dio(
     BaseOptions(
-      baseUrl: 'http://localhost:8080/api',
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 5),
+      baseUrl: _apiBaseUrl,
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
       headers: const {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

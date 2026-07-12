@@ -61,10 +61,10 @@ dependencies:
   # Routing
   go_router: ^17.3.0
   # Hardware / POS
-  flutter_thermal_printer: ^2.2.1
-  printing: ^5.13.0
-  pdf: ^3.11.0
-  mobile_scanner: ^7.2.0
+#  flutter_thermal_printer: ^2.2.1
+#  printing: ^5.13.0
+#  pdf: ^3.11.0
+#  mobile_scanner: ^7.2.0
   # Logging (app log file w/ timestamps)
   logger: ^2.4.0
 #  sentry_flutter: ^8.9.0       # production crash/error reporting

@@ -133,6 +133,18 @@ class ProductService(
         return product.toResponse()
     }
 
+    @Transactional
+    fun deleteProduct(id: UUID) {
+        val product = productRepository.findById(id)
+            .orElseThrow {
+                IllegalArgumentException(
+                    "Product with ID $id not found"
+                )
+            }
+
+        productRepository.delete(product)
+    }
+
     private fun ProductEntity.toResponse(): ProductResponse {
         return ProductResponse(
             id = id,
