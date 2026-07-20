@@ -4,6 +4,10 @@ import 'app_theme.dart';
 
 enum AppToastKind { info, success, warning, error }
 
+/// Where toasts appear. Desktop POS default: bottom-right (out of the way of
+/// the cart); mobile: bottom-center above the thumb zone.
+enum AppToastPosition { topStart, topCenter, topEnd, bottomStart, bottomCenter, bottomEnd }
+
 /// Non-blocking feedback. NEVER use a toast for money mistakes the cashier
 /// must acknowledge — use AppDialog.confirm for those.
 abstract final class AppToast {
@@ -13,7 +17,10 @@ abstract final class AppToast {
     required String message,
     String? title,
     AppToastKind kind = AppToastKind.info,
+    AppToastPosition position = AppToastPosition.bottomEnd,
     Duration duration = const Duration(seconds: 3),
+    String? actionLabel,
+    VoidCallback? onAction,
   }) {
     final colors = AppTheme.semanticOf(context);
     final accent = switch (kind) {
@@ -25,6 +32,14 @@ abstract final class AppToast {
     shad.showToast(
       context: context,
       showDuration: duration,
+      location: switch (position) {
+        AppToastPosition.topStart => shad.ToastLocation.topLeft,
+        AppToastPosition.topCenter => shad.ToastLocation.topCenter,
+        AppToastPosition.topEnd => shad.ToastLocation.topRight,
+        AppToastPosition.bottomStart => shad.ToastLocation.bottomLeft,
+        AppToastPosition.bottomCenter => shad.ToastLocation.bottomCenter,
+        AppToastPosition.bottomEnd => shad.ToastLocation.bottomRight,
+      },
       builder: (context, overlay) => shad.SurfaceCard(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -41,6 +56,16 @@ abstract final class AppToast {
                   Text(message),
                 ],
               ),
+              if (actionLabel != null) ...[
+                const SizedBox(width: 16),
+                shad.GhostButton(
+                  onPressed: () {
+                    overlay.close();
+                    onAction?.call();
+                  },
+                  child: Text(actionLabel),
+                ),
+              ],
             ],
           ),
         ),
@@ -50,4 +75,6 @@ abstract final class AppToast {
 
   static void success(BuildContext c, String m, {String? title}) => show(c, message: m, title: title, kind: AppToastKind.success);
   static void error(BuildContext c, String m, {String? title}) => show(c, message: m, title: title, kind: AppToastKind.error);
+  static void warning(BuildContext c, String m, {String? title}) => show(c, message: m, title: title, kind: AppToastKind.warning);
+  static void info(BuildContext c, String m, {String? title}) => show(c, message: m, title: title, kind: AppToastKind.info);
 }

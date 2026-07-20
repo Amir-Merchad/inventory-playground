@@ -43,7 +43,6 @@ dependencies:
   # Networking
   dio: ^5.7.0
   retrofit: ^4.4.0
-  pretty_dio_logger: ^1.4.0
 #  connectivity_plus: ^7.2.0
 #  web_socket_channel: ^3.0.0
   # Local cache / offline (sqlite3_flutter_libs removed — EOL no-op since sqlite3 3.x)
@@ -65,10 +64,12 @@ dependencies:
 #  printing: ^5.13.0
 #  pdf: ^3.11.0
 #  mobile_scanner: ^7.2.0
-  # Logging (app log file w/ timestamps)
-  logger: ^2.4.0
+  # Logging (Talker: console + rotating file, Dio + Bloc integrations)
+  talker: ^5.1.19
+  talker_dio_logger: ^5.1.19
+  talker_bloc_logger: ^5.1.19
 #  sentry_flutter: ^8.9.0       # production crash/error reporting
-#  uuid: ^4.5.0
+  uuid: ^4.5.0
 #  package_info_plus: ^10.2.0
   device_info_plus: ^13.2.0
   #search stream debounce

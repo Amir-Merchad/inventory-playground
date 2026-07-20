@@ -28,12 +28,6 @@ class ProductController(
         return productService.createProduct(request)
     }
 
-//    @GetMapping
-//    @ResponseStatus(HttpStatus.OK)
-//    fun getAllProducts(): List<ProductResponse> {
-//        return productService.getAllProducts()
-//    }
-
     @GetMapping
     fun getProductsPage(
         @RequestParam(

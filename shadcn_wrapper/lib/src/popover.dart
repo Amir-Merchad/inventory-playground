@@ -10,9 +10,9 @@ class AppTooltip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ADAPTER (shadcn ^0.0.52).
+    // ADAPTER (shadcn ^0.0.52): Tooltip.tooltip is a WidgetBuilder.
     return shad.Tooltip(
-      tooltip: shad.TooltipContainer(
+      tooltip: (_) => shad.TooltipContainer(
         child: Row(mainAxisSize: MainAxisSize.min, children: [
           Text(message),
           if (shortcut != null) ...[
@@ -20,6 +20,25 @@ class AppTooltip extends StatelessWidget {
             Text(shortcut!).muted().mono().xSmall(),
           ],
         ]),
+      ),
+      child: child,
+    );
+  }
+}
+
+/// Rich hover preview (desktop): product image + stock on hover, customer
+/// balance on hover, etc. Does nothing on touch — always provide a tap path.
+class AppHoverCard extends StatelessWidget {
+  const AppHoverCard({super.key, required this.child, required this.preview});
+  final Widget child;
+  final WidgetBuilder preview;
+
+  @override
+  Widget build(BuildContext context) {
+    // ADAPTER (shadcn ^0.0.52).
+    return shad.HoverCard(
+      hoverBuilder: (context) => shad.SurfaceCard(
+        child: Padding(padding: const EdgeInsets.all(12), child: preview(context)),
       ),
       child: child,
     );

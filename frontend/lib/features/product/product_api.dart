@@ -31,4 +31,9 @@ abstract class ProductApi {
   Future<Product> updateProduct(
     @Body() UpdateProductRequest request,
   );
+
+  @DELETE('/products/{id}')
+  Future<void> deleteProduct(
+    @Path('id') String id,
+  );
 }

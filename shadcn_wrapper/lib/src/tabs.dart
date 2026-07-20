@@ -7,6 +7,25 @@ class AppTab {
   final Widget child;
 }
 
+/// Header-only underlined tab strip — use when the body is routed elsewhere
+/// (e.g. nested navigator per tab, or tabs above an AppTable).
+class AppTabBar extends StatelessWidget {
+  const AppTabBar({super.key, required this.labels, required this.index, required this.onChanged});
+  final List<String> labels;
+  final int index;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    // ADAPTER (shadcn ^0.0.52): TabList underline style.
+    return shad.TabList(
+      index: index,
+      onChanged: onChanged,
+      children: [for (final l in labels) shad.TabItem(child: Text(l))],
+    );
+  }
+}
+
 /// Controlled tabs (state lives in the caller's bloc/cubit).
 class AppTabs extends StatelessWidget {
   const AppTabs({super.key, required this.tabs, required this.index, required this.onChanged});

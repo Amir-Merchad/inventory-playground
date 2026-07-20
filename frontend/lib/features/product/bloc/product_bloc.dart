@@ -1,8 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
-import 'package:frontend/product/data/product.dart';
-import 'package:frontend/product/product_api.dart';
+import 'package:frontend/core/network/api_error.dart';
+import 'package:frontend/core/network/api_error_mapper.dart';
+import 'package:frontend/features/product/data/product.dart';
+import 'package:frontend/features/product/product_api.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 part 'product_event.dart';
@@ -57,6 +59,11 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
     on<ProductUpdated>(
       _onProductUpdated,
+      transformer: droppable(),
+    );
+
+    on<ProductDeleted>(
+      _onProductDeleted,
       transformer: droppable(),
     );
   }
@@ -125,7 +132,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       emit(
         state.copyWith(
           status: ProductStatus.failure,
-          errorMessage: error.toString(),
+          error: toApiError(error),
         ),
       );
     }
@@ -164,7 +171,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
           status: ProductStatus.failure,
           query: query,
           page: 0,
-          errorMessage: error.toString(),
+          error: toApiError(error),
         ),
       );
     }
@@ -201,7 +208,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       emit(
         state.copyWith(
           status: ProductStatus.failure,
-          errorMessage: error.toString(),
+          error: toApiError(error),
         ),
       );
     }
@@ -242,7 +249,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       emit(
         state.copyWith(
           status: ProductStatus.failure,
-          errorMessage: error.toString(),
+          error: toApiError(error),
         ),
       );
     }
@@ -279,7 +286,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       emit(
         state.copyWith(
           isSubmitting: false,
-          errorMessage: error.toString(),
+          error: toApiError(error),
         ),
       );
     }
@@ -330,7 +337,58 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       emit(
         state.copyWith(
           isSubmitting: false,
-          errorMessage: error.toString(),
+          error: toApiError(error),
+        ),
+      );
+    }
+  }
+
+  Future<void> _onProductDeleted(
+    ProductDeleted event,
+    Emitter<ProductState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        isSubmitting: true,
+        clearError: true,
+      ),
+    );
+
+    try {
+      await _productApi.deleteProduct(event.id);
+
+      var requestedPage = state.page;
+
+      var productPage = await _requestPage(
+        query: state.query,
+        page: requestedPage,
+        size: state.size,
+      );
+
+      // The updated name/SKU can move the product out
+      // of the current search or remove the final page.
+      if (productPage.items.isEmpty && requestedPage > 0 && requestedPage >= productPage.totalPages) {
+        requestedPage = productPage.totalPages - 1;
+
+        if (requestedPage >= 0) {
+          productPage = await _requestPage(
+            query: state.query,
+            page: requestedPage,
+            size: state.size,
+          );
+        }
+      }
+
+      _emitProductPage(
+        emit,
+        productPage,
+        query: state.query,
+      );
+    } catch (error) {
+      emit(
+        state.copyWith(
+          isSubmitting: false,
+          error: toApiError(error),
         ),
       );
     }

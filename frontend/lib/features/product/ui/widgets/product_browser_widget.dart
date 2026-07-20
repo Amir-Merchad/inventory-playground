@@ -1,10 +1,10 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/product/bloc/product_bloc.dart';
-import 'package:frontend/product/data/product.dart';
-import 'package:frontend/product/ui/widgets/loading_list_widget.dart';
-import 'package:frontend/product/ui/widgets/page_size_selector.dart';
-import 'package:frontend/product/ui/widgets/product_list_widget.dart';
+import 'package:frontend/features/product/bloc/product_bloc.dart';
+import 'package:frontend/features/product/data/product.dart';
+import 'package:frontend/features/product/ui/widgets/loading_list_widget.dart';
+import 'package:frontend/features/product/ui/widgets/page_size_selector.dart';
+import 'package:frontend/features/product/ui/widgets/product_list_widget.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shad;
 import 'package:shadcn_wrapper/shadcn_wrapper.dart';
 
@@ -12,11 +12,18 @@ class ProductBrowserWidget extends StatelessWidget {
   ProductBrowserWidget({
     required this.onProductPressed,
     required this.onAddProduct,
+    this.resultsBuilder,
     super.key,
   });
 
   final ValueChanged<Product> onProductPressed;
   final VoidCallback onAddProduct;
+
+  /// Optional custom view for the loaded products (e.g. a data table). When
+  /// null, falls back to the default list. Search / pagination / loading /
+  /// empty / error handling stay shared across every results view.
+  final Widget Function(BuildContext context, ProductState state)?
+      resultsBuilder;
 
   final TextEditingController _searchController = TextEditingController();
 
@@ -49,6 +56,8 @@ class ProductBrowserWidget extends StatelessWidget {
                           );
                     },
                   ),
+                  showSearchIcon: false,
+                  clearable: false,
                   onChanged: (query) {
                     context.read<ProductBloc>().add(
                           ProductSearchChanged(query),
@@ -70,16 +79,17 @@ class ProductBrowserWidget extends StatelessWidget {
                 child: Wrap(
                   spacing: AppTokens.s4,
                   runSpacing: AppTokens.s2,
-                  crossAxisAlignment: WrapCrossAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.end,
                   children: [
-                    Text(
-                      '${state.totalItems} products',
-                    ).muted(),
+                    // Text(
+                    //   '${state.totalItems} products',
+                    // ).muted(),
                     const PageSizeSelector(),
-                    AppPagination(
+                    shad.Pagination(
+                      showLabel: false,
                       page: state.page + 1,
                       totalPages: state.totalPages,
-                      onPage: (selectedPage) {
+                      onPageChanged: (selectedPage) {
                         context.read<ProductBloc>().add(
                               ProductPageRequested(
                                 selectedPage - 1,
@@ -87,6 +97,17 @@ class ProductBrowserWidget extends StatelessWidget {
                             );
                       },
                     ),
+                    // AppPagination(
+                    //   page: state.page + 1,
+                    //   totalPages: state.totalPages,
+                    //   onPage: (selectedPage) {
+                    //     context.read<ProductBloc>().add(
+                    //           ProductPageRequested(
+                    //             selectedPage - 1,
+                    //           ),
+                    //         );
+                    //   },
+                    // ),
                   ],
                 ),
               ),
@@ -107,7 +128,7 @@ class ProductBrowserWidget extends StatelessWidget {
     if (state.status == ProductStatus.failure && state.products.isEmpty) {
       return AppErrorState(
         title: 'Failed to load products',
-        message: state.errorMessage,
+        message: state.error?.message,
         retryLabel: 'Try again',
         onRetry: () {
           context.read<ProductBloc>().add(
@@ -126,9 +147,10 @@ class ProductBrowserWidget extends StatelessWidget {
       );
     }
 
-    return ProductListWidget(
-      products: state.products,
-      onProductPressed: onProductPressed,
-    );
+    return resultsBuilder?.call(context, state) ??
+        ProductListWidget(
+          products: state.products,
+          onProductPressed: onProductPressed,
+        );
   }
 }

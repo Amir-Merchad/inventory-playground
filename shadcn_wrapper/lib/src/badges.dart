@@ -24,6 +24,43 @@ class AppBadge extends StatelessWidget {
   }
 }
 
+/// Count bubble to overlay on icons (cart items, pending sync, alerts).
+class AppCountBadge extends StatelessWidget {
+  const AppCountBadge({super.key, required this.count, required this.child, this.max = 99});
+  final int count;
+  final Widget child;
+  final int max;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = shad.Theme.of(context);
+    if (count <= 0) return child;
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        child,
+        PositionedDirectional(
+          top: -6,
+          end: -6,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+            constraints: const BoxConstraints(minWidth: 16),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary,
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              count > max ? '$max+' : '$count',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: theme.colorScheme.primaryForeground, fontSize: 10, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 /// Status dot + label (connection state, shift open/closed).
 class AppStatusDot extends StatelessWidget {
   const AppStatusDot({super.key, required this.label, required this.color});

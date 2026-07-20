@@ -18,7 +18,7 @@ final class ProductState extends Equatable {
     this.totalPages = 0,
     this.hasNext = false,
     this.isSubmitting = false,
-    this.errorMessage,
+    this.error,
   });
 
   final ProductStatus status;
@@ -30,7 +30,7 @@ final class ProductState extends Equatable {
   final int totalPages;
   final bool hasNext;
   final bool isSubmitting;
-  final String? errorMessage;
+  final ApiError? error;
   bool get hasPrevious => page > 0;
 
   ProductState copyWith({
@@ -43,7 +43,7 @@ final class ProductState extends Equatable {
     int? totalPages,
     bool? hasNext,
     bool? isSubmitting,
-    String? errorMessage,
+    ApiError? error,
     bool clearError = false,
   }) {
     return ProductState(
@@ -56,7 +56,7 @@ final class ProductState extends Equatable {
       totalPages: totalPages ?? this.totalPages,
       hasNext: hasNext ?? this.hasNext,
       isSubmitting: isSubmitting ?? this.isSubmitting,
-      errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
+      error: clearError ? null : error ?? this.error,
     );
   }
 
@@ -71,6 +71,6 @@ final class ProductState extends Equatable {
         totalPages,
         hasNext,
         isSubmitting,
-        errorMessage,
+        error,
       ];
 }

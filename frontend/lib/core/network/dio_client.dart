@@ -1,8 +1,12 @@
 import 'package:dio/dio.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:flutter/foundation.dart';
+import 'package:frontend/core/logging/app_log.dart';
+import 'package:frontend/core/network/correlation_id_interceptor.dart';
+import 'package:talker_dio_logger/talker_dio_logger.dart';
 
 const _apiBaseUrl = String.fromEnvironment(
   'API_BASE_URL',
+  // defaultValue: 'https://inventory-playground-production.up.railway.app/api',
   defaultValue: 'http://localhost:8080/api',
 );
 
@@ -19,14 +23,29 @@ Dio createDioClient() {
     ),
   );
 
+  // Set the correlation-id header first, then log via Talker.
+  dio.interceptors.add(CorrelationIdInterceptor());
   dio.interceptors.add(
-    PrettyDioLogger(
-      requestHeader: true,
-      requestBody: true,
-      responseHeader: true,
-      responseBody: true,
-      error: true,
-      compact: false,
+    TalkerDioLogger(
+      talker: AppLog.talker,
+      settings: TalkerDioLoggerSettings(
+        // Always redact secrets from headers (auth token, cookies).
+        hiddenHeaders: {'authorization', 'cookie', 'set-cookie'},
+        // Headers/bodies only in debug — never log a password or JWT in release.
+        printRequestHeaders: kDebugMode,
+        printResponseHeaders: kDebugMode,
+        printRequestData: kDebugMode,
+        printResponseData: kDebugMode,
+
+        // printRequestHeaders: false,
+        // printResponseHeaders: false,
+        // printRequestData: false,
+        // printResponseData: false,
+
+        // Extra safety once auth exists: don't log auth request/response bodies.
+        requestFilter: (options) => !options.path.contains('/auth'),
+        responseFilter: (response) => !response.requestOptions.path.contains('/auth'),
+      ),
     ),
   );
 

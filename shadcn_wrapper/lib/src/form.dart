@@ -38,6 +38,48 @@ class AppFormField extends StatelessWidget {
   }
 }
 
+/// Desktop settings-row layout: label + help text on the start side, the
+/// control on the end side. Stacks vertically when narrow (mobile).
+class AppLabeledRow extends StatelessWidget {
+  const AppLabeledRow({super.key, required this.label, required this.child, this.hint, this.breakpoint = 480});
+  final String label;
+  final String? hint;
+  final Widget child;
+  final double breakpoint;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, c) {
+      final labelCol = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(label).small().semiBold(),
+          if (hint != null) ...[
+            const SizedBox(height: AppTokens.s1),
+            Text(hint!).muted().xSmall(),
+          ],
+        ],
+      );
+      if (c.maxWidth < breakpoint) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [labelCol, const SizedBox(height: AppTokens.s2), child],
+        );
+      }
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(child: labelCol),
+          const SizedBox(width: AppTokens.s4),
+          Flexible(child: Align(alignment: AlignmentDirectional.centerEnd, child: child)),
+        ],
+      );
+    });
+  }
+}
+
 /// Two-language name editor row (name + name_i18n languages) — the standard
 /// pattern for this product family; generic enough to reuse.
 class AppI18nNameFields extends StatelessWidget {

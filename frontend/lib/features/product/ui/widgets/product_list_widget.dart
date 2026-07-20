@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:frontend/product/data/product.dart';
+import 'package:frontend/features/product/data/product.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shad;
 import 'package:shadcn_wrapper/shadcn_wrapper.dart';
 

@@ -1,5 +1,8 @@
 package com.inventory.playground.product
 
+import com.inventory.playground.common.error.DuplicateSkuException
+import com.inventory.playground.common.error.ProductConflictException
+import com.inventory.playground.common.error.ProductNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.data.domain.PageRequest
@@ -20,9 +23,7 @@ class ProductService(
         val normalizedSku = request.sku.trim().uppercase()
 
         if (productRepository.existsBySkuIgnoreCase(normalizedSku)) {
-            throw IllegalArgumentException(
-                "A product with SKU $normalizedSku already exists"
-            )
+            throw DuplicateSkuException(normalizedSku);
         }
 
         val product = ProductEntity(
@@ -98,15 +99,11 @@ class ProductService(
     ): ProductResponse {
         val product = productRepository.findById(request.id)
             .orElseThrow {
-                IllegalArgumentException(
-                    "Product with ID ${request.id} not found"
-                )
+                ProductNotFoundException(request.id)
             }
 
         if (product.version != request.version) {
-            throw IllegalArgumentException(
-                "Product with ID ${request.id} has been modified by another transaction"
-            )
+            throw ProductConflictException(request.id)
         }
 
         val normalizedName = request.name.trim()
@@ -116,16 +113,13 @@ class ProductService(
             !product.sku.equals(normalizedSku, ignoreCase = true) &&
             productRepository.existsBySkuIgnoreCase(normalizedSku)
         ) {
-            throw IllegalArgumentException(
-                "A product with SKU $normalizedSku already exists"
-            )
+            throw DuplicateSkuException(normalizedSku)
         }
 
         product.name = normalizedName
         product.sku = normalizedSku
         product.price = request.price
         product.stock = request.stock
-        product.version = request.version + 1
         product.updatedAt = Instant.now()
 
         productRepository.flush()
@@ -137,9 +131,7 @@ class ProductService(
     fun deleteProduct(id: UUID) {
         val product = productRepository.findById(id)
             .orElseThrow {
-                IllegalArgumentException(
-                    "Product with ID $id not found"
-                )
+                ProductNotFoundException(id)
             }
 
         productRepository.delete(product)

@@ -8,8 +8,9 @@ class AppProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      // ADAPTER (shadcn ^0.0.52): Progress expects 0..100.
-      shad.Progress(progress: value == null ? null : (value! * 100).clamp(0, 100));
+      // ADAPTER (shadcn ^0.0.52): Progress normalizes against min/max
+      // (defaults 0..1), so pass the fraction straight through.
+      shad.Progress(progress: value?.clamp(0.0, 1.0));
 }
 
 class AppSpinner extends StatelessWidget {

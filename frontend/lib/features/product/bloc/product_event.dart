@@ -55,3 +55,12 @@ final class ProductUpdated extends ProductEvent {
   @override
   List<Object?> get props => [request];
 }
+
+final class ProductDeleted extends ProductEvent {
+  const ProductDeleted(this.id);
+
+  final id;
+
+  @override
+  List<Object?> get props => [id];
+}

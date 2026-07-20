@@ -22,3 +22,32 @@ class AppAccordion extends StatelessWidget {
     );
   }
 }
+
+/// Single expand/collapse section ("Advanced options" on item editor,
+/// per-order detail rows). Controlled: state lives in the caller.
+class AppCollapsible extends StatelessWidget {
+  const AppCollapsible({
+    super.key,
+    required this.header,
+    required this.child,
+    required this.expanded,
+    required this.onChanged,
+  });
+  final Widget header;
+  final Widget child;
+  final bool expanded;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    // ADAPTER (shadcn ^0.0.52): Collapsible + trigger/content children.
+    return shad.Collapsible(
+      isExpanded: expanded,
+      onExpansionChanged: onChanged,
+      children: [
+        shad.CollapsibleTrigger(child: header),
+        shad.CollapsibleContent(child: child),
+      ],
+    );
+  }
+}

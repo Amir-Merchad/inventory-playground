@@ -18,6 +18,39 @@ class AppCard extends StatelessWidget {
   }
 }
 
+/// Image-first card (product grid on POS sell screen, catalog browser).
+/// Desktop: hover scale feedback; touch: plain press.
+class AppImageCard extends StatelessWidget {
+  const AppImageCard({
+    super.key,
+    required this.image,
+    this.title,
+    this.subtitle,
+    this.trailing,
+    this.onPressed,
+    this.enabled = true,
+  });
+  final Widget image;
+  final String? title;
+  final String? subtitle;
+  final Widget? trailing;
+  final VoidCallback? onPressed;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    // ADAPTER (shadcn ^0.0.52): CardImage.
+    return shad.CardImage(
+      image: image,
+      title: title == null ? null : Text(title!),
+      subtitle: subtitle == null ? null : Text(subtitle!),
+      trailing: trailing,
+      onPressed: onPressed,
+      enabled: enabled,
+    );
+  }
+}
+
 /// Titled section used on settings/report pages.
 class AppSection extends StatelessWidget {
   const AppSection({super.key, required this.title, required this.child, this.trailing});
