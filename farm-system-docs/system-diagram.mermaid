@@ -1,0 +1,72 @@
+flowchart LR
+    subgraph Users
+        ADMIN[Admin<br/>all farms, reports,<br/>impersonate manager]
+        MGR[Farm Manager<br/>one farm, full data entry]
+        WRK[Worker - phase 2<br/>limited entry]
+    end
+
+    ADMIN -->|read all / impersonate| FARM
+    MGR --> FARM
+    WRK -.-> FARM
+
+    subgraph Farm
+        FARM[Farm]
+        WORKERS[Workers<br/>wages = expenses]
+        GENEXP[General farm expenses]
+        FARM --> WORKERS
+        FARM --> GENEXP
+    end
+
+    subgraph Assets
+        ANIMALS[Animals<br/>individual or groups<br/>lifecycle + health]
+        CROPS[Crops<br/>plots, seasons, harvest]
+    end
+    FARM --> ANIMALS
+    FARM --> CROPS
+
+    subgraph Expenses
+        VET[Vaccines & vet visits<br/>+ reminders]
+        FEED[Food & vitamins]
+        SEEDS[Seeds & fertilizer]
+    end
+    ANIMALS --> VET
+    ANIMALS --> FEED
+    CROPS --> SEEDS
+
+    subgraph Production
+        PROD[Products<br/>milk, eggs, wheat...]
+        RUN[Production run<br/>recipe/BOM + expenses<br/>+ conversion losses]
+    end
+    ANIMALS -->|produce| PROD
+    CROPS -->|harvest| PROD
+    PROD --> RUN
+
+    subgraph Inventory
+        STOCK[Stock<br/>qty, avg cost, alerts,<br/>movement ledger]
+    end
+    RUN -->|output| STOCK
+    STOCK -->|reuse as input| RUN
+
+    subgraph Purchasing
+        PURCH[Purchases<br/>suppliers]
+    end
+    PURCH -->|supplies| FEED
+    PURCH -->|supplies| SEEDS
+    PURCH -->|resale goods| STOCK
+    PURCH -->|new animals| ANIMALS
+
+    subgraph Sales
+        SSALE[Stock sales<br/>invoices, credit, customers]
+        ASALE[Asset sales<br/>sell animal / crop]
+    end
+    STOCK --> SSALE
+    ANIMALS --> ASALE
+    CROPS --> ASALE
+
+    subgraph Reporting
+        REP[Dashboards & reports<br/>profit per asset, yield variance,<br/>expense breakdown, exports]
+    end
+    SSALE --> REP
+    ASALE --> REP
+    Expenses --> REP
+    STOCK --> REP
